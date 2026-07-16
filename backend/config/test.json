@@ -1,0 +1,5 @@
+{
+    "db": {
+        "host": "mongodb+srv://raceer:<db_password>@klusteri.6u46jbz.mongodb.net/testPallostats?appName=Klusteri"
+    }
+}

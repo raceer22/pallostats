@@ -1,8 +1,8 @@
-const express = require('express')
-const playerRouter = require("./controllers/players")
+const express = require('express');
+const { playerRouter, teamRouter, leagueRouter } = require('./controllers/palloliitto');
 
-const app = express()
+const app = express();
 
-app.use('/api/player', playerRouter)
+app.use('/api/player', playerRouter);
 
-module.exports = app
+module.exports = app;

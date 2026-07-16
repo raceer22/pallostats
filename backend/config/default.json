@@ -3,9 +3,6 @@
     "url": "https://spl.torneopal.net/taso/rest",
     "timeout": 5000
   },
-  "db": {
-    "host": "localhost"
-  },
   "server": {
     "host": "localhost",
     "port": 3000

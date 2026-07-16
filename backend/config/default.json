@@ -1,6 +1,6 @@
 {
-  "api": {
-    "url": "https://spl.torneopal.net/taso/rest",
+  "footballData": {
+    "api": "https://api.football-data.org/v4",
     "timeout": 5000
   },
   "server": {

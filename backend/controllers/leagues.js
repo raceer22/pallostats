@@ -23,15 +23,15 @@ leagueRouter.get('/', async (req, res) => {
   }
 });
 
-leagueRouter.get('/:code/standings', async (req, res) => {
+leagueRouter.get('/:code/teams', async (req, res) => {
   const leagueCode = req.params.code;
   try {
-    const response = await footballApi.get(`/competitions/${leagueCode}/standings`);
+    const response = await footballApi.get(`/competitions/${leagueCode}/teams`);
     return res.json(response.data);
   } catch (error) {
-    console.log('Error fetching standings:', error.message);
+    console.log('Error fetching teams:', error.message);
     return res.status(error.response?.status || 500).json({
-      error: error.response?.data?.message || 'Failed to fetch league standings.'
+      error: error.response?.data?.message || 'Failed to fetch league teams.'
     });
   }
 });

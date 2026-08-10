@@ -6,72 +6,30 @@ import {
 } from 'react';
 import teamService from './services/teams';
 import leagueService from './services/leagues';
+import { useSearchQuery } from './stores/useUIStore';
+import { useCurrentLeague, useLeagueActions } from './stores/useLeagueStore';
 
-const SearchBar = ({ searchQuery, setSearchQuery }) => {
-  return (
-    <>
-      <TextField
-        label="Search"
-        variant="outlined"
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-      />
-      <Button variant="contained" color="primary">
-        Search
-      </Button>
-    </>
-  );
-};
-
-const LeagueDetails = ({ league }) => {
-  if (!league) {
-    return <div>Loading...</div>;
-  }
-  return (
-    <div>
-      <h2>{league.competition.name}</h2>
-      <ul>
-        {league.teams.map((team) => (
-          <li key={team.id}>
-            {team.name} 
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-};
-
-const Home = ({ league }) => {
-  return (
-    <div>
-      <h1>Home</h1>
-      <LeagueDetails league={league} />
-    </div>
-  );
-};
+import SearchBar from './components/SearchBar';
+import Home from './components/Home';
 
 const App = () => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [league, setLeague] = useState(null);
-  const [leagues, setLeagues] = useState(null);
-
-  useEffect(() => {
-  }, []);
+  const { setCurrentLeague } = useLeagueActions()
 
   useEffect(() => {
     leagueService.getLeagueTeams('PL').then(response => {
-      setLeague(response.data);
+      console.log(response.data);
+      setCurrentLeague(response.data);
     });
-  }, [])
+  }, [setCurrentLeague])
 
   return (
     <Container>
-      <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+      <SearchBar/>
       <Routes>
-        <Route path="/" element={<Home league={league} />} />
+        <Route path="/" element={<Home/>} />
       </Routes>
     </Container>
   )
 }
 
-export default App;
+export default App

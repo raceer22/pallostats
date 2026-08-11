@@ -15,7 +15,8 @@
     "config": "^4.4.2",
     "cross-env": "^10.1.0",
     "express": "^5.2.1",
-    "mongoose": "^9.7.4"
+    "mongoose": "^9.7.4",
+    "redis": "^6.2.1"
   },
   "devDependencies": {
     "eslint": "^8.57.1",

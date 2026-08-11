@@ -2,6 +2,7 @@ const leagueRouter = require('express').Router();
 const axios = require('axios');
 const config = require('config');
 const headers = require('../utils/headers');
+const redisClient = require('../utils/redis')
 
 const footballApi = axios.create({
   baseURL: config.get('footballData.api'),
@@ -11,9 +12,22 @@ const footballApi = axios.create({
   }
 });
 
+const TTL_COMPETITIONS = 86400 * 7;
+const TTL_TEAMS = 86400;
+
 leagueRouter.get('/', async (req, res) => {
+  const cacheKey = `competitions:all`
   try {
+    const cachedData = await redisClient.get(cacheKey)
+    if (cachedData) {
+      return res.json(JSON.parse(cachedData))
+    }
+
     const response = await footballApi.get('/competitions');
+    await redisClient.set(cacheKey, JSON.stringify(response.data), {
+      EX: TTL_COMPETITIONS
+    })
+
     return res.json(response.data);
   } catch (error) {
     console.log('Error fetching competitions:', error.message);
@@ -25,8 +39,19 @@ leagueRouter.get('/', async (req, res) => {
 
 leagueRouter.get('/:code/teams', async (req, res) => {
   const leagueCode = req.params.code;
+  const cacheKey = `competitions:${leagueCode}:teams`
+  
   try {
+    const cachedData = await redisClient.get(cacheKey)
+    if (cachedData) {
+      return res.json(JSON.parse(cachedData))
+    }
+
     const response = await footballApi.get(`/competitions/${leagueCode}/teams`);
+    await redisClient.set(cacheKey, JSON.stringify(response.data), {
+      EX: TTL_TEAMS
+    })
+
     return res.json(response.data);
   } catch (error) {
     console.log('Error fetching teams:', error.message);

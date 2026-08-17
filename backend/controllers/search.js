@@ -1,0 +1,48 @@
+const searchRouter = require('express').Router();
+const axios = require('axios');
+const config = require('config');
+const headers = require('../utils/headers');
+const redisClient = require('../utils/redis')
+
+const footballApi = axios.create({
+  baseURL: config.get('footballData.api'),
+  headers: {
+    'X-Auth-Token': config.get('footballData.apiKey'),
+    ...headers
+  }
+});
+
+searchRouter.get('/', async (req, res) => {
+  const cacheKey = `competitions:all`
+
+  const query = req.query.q?.trim().toLowerCase()
+  const category = req.query.category?.toUpperCase() || 'ALL';
+
+  let data = await redisClient.get(cacheKey)
+  if (!cachedData) {
+    try {
+      data = await footballApi.get('/competitions').data
+      await redisClient.set(cacheKey, JSON.stringify(data), {
+        EX: 86400
+      })
+    } catch (error) {
+      console.log('API error:', error)
+    }
+  }
+
+  const results = {
+    leagues: [],
+    teams: [],
+    players: []
+  }
+
+  if (data.competitions?.name?.toLowerCase().includes(query)) {
+    results.leagues.push({
+      id: data.competitions.id
+    })
+  }
+
+
+
+
+})

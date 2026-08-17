@@ -3,15 +3,6 @@ module.exports = {
     'airbnb-base',
   ],
   rules: {
-    'no-console': [
-      'error',
-      {
-        allow: [
-          'error',
-          'warn',
-        ],
-      },
-    ],
   },
   env: {
     node: true,

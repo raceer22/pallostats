@@ -1,6 +1,6 @@
 const config = require('config');
 const app = require('./app');
-const redisClient = require('./utils/redis')
+const redisClient = require('./utils/redis');
 
 const port = config.get('server.port') || 3000;
 
@@ -13,7 +13,7 @@ const startServer = async () => {
     });
   } catch (error) {
     console.error('Failed to start server:', error);
-    process.exit(1)
+    process.exit(1);
   }
 };
 

@@ -10,7 +10,7 @@ import searchService from './services/search'
 import { useSearchQuery, useSearchData, useUIActions } from './stores/useUIStore';
 import { useCurrentLeague, useLeagueActions } from './stores/useLeagueStore';
 
-import SearchBar from './components/SearchBar';
+import SearchBar from './components/SearchBar.jsx';
 import Home from './components/Home';
 
 const App = () => {

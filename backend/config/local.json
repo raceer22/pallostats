@@ -1,5 +1,8 @@
 {
   "db": {
     "host": "mongodb+srv://raceer:<db_password>@klusteri.6u46jbz.mongodb.net/pallostats?appName=Klusteri"
+  },
+  "footballData": {
+    "apiKey": "d9c618cccdd7449f9e0fee3b571622da"
   }
 }

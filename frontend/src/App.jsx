@@ -6,7 +6,8 @@ import {
 } from 'react';
 import teamService from './services/teams';
 import leagueService from './services/leagues';
-import { useSearchQuery } from './stores/useUIStore';
+import searchService from './services/search'
+import { useSearchQuery, useSearchData, useUIActions } from './stores/useUIStore';
 import { useCurrentLeague, useLeagueActions } from './stores/useLeagueStore';
 
 import SearchBar from './components/SearchBar';
@@ -14,13 +15,14 @@ import Home from './components/Home';
 
 const App = () => {
   const { setCurrentLeague } = useLeagueActions()
+  const { setSearchData } = useUIActions()
 
   useEffect(() => {
-    leagueService.getLeagueTeams('PL').then(response => {
+    searchService.getAll().then(response => {
       console.log(response.data);
-      setCurrentLeague(response.data);
-    });
-  }, [setCurrentLeague])
+      setSearchData(response.data)
+    })
+  }, [setSearchData])
 
   return (
     <Container>

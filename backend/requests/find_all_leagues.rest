@@ -1,2 +1,2 @@
-GET http://api.football-data.org/v4/competitions/
+GET http://api.football-data.org/v4/competitions/all
 X-Auth-Token: d9c618cccdd7449f9e0fee3b571622da

@@ -15,7 +15,7 @@ const footballApi = axios.create({
 const TTL_COMPETITIONS = 86400 * 7;
 const TTL_TEAMS = 86400;
 
-leagueRouter.get('/', async (req, res) => {
+leagueRouter.get('/all', async (req, res) => {
   const cacheKey = `competitions:all`
   try {
     const cachedData = await redisClient.get(cacheKey)

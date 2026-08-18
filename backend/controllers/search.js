@@ -13,7 +13,7 @@ const footballApi = axios.create({
 });
 
 searchRouter.get('/', async (req, res) => {
-  const cacheKey = `competitions:all`
+  const cacheKey = `search:all_entities`
 
   const query = req.query.q?.trim().toLowerCase()
   const category = req.query.category?.toUpperCase() || 'ALL';
@@ -46,3 +46,14 @@ searchRouter.get('/', async (req, res) => {
 
 
 })
+
+searchRouter.get('/list', async (req, res) => {
+  const cacheKey = `search:all_entities`
+
+  let cachedData = await redisClient.get(cacheKey)
+
+  if (!cachedData) return null
+  return res.json(JSON.parse(cachedData))
+})
+
+module.exports = searchRouter

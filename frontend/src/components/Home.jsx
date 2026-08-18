@@ -1,72 +1,88 @@
+import React, { useMemo } from 'react'
 import { useCurrentLeague } from "../stores/useLeagueStore";
-import { useSearchQuery } from "../stores/useUIStore";
+import { useSearchQuery, useSearchData } from "../stores/useUIStore";
 
 const Home = () => {
   const currentLeague = useCurrentLeague()
   const searchQuery = useSearchQuery()
+  const searchData = useSearchData()
 
-  const matchingTeams = currentLeague?.teams ?
-    currentLeague?.teams.filter(
-      team => 
-        team.name.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-    : null
+  const searchResults = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase()
 
-  const filteredLeague = currentLeague
-    ? { ...currentLeague, teams: matchingTeams }
-    : null
+    const competitions = []
+    const teams = []
+    const players = []
+
+    if (!query || query.length < 2) {
+      return { competitions, teams, players}
+    }
+
+    for (const item of searchData) {
+      const matchesName = item?.name?.toLowerCase().includes(query)
+
+      if (matchesName) {
+        if (item.type === 'competition') competitions.push(item)
+        else if (item.type === 'team') teams.push(item)
+        else if (item.type === 'player') players.push(item)
+      }
+    }
+
+    return {
+      competitions: competitions.slice(0, 5),
+      teams: teams.slice(0, 8),
+      players: players.slice(0, 15),
+    }
+  }, [searchQuery, searchData])
+
+
+
 
   return (
     <div>
       <h1>Home</h1>
-      <LeagueDetails league={filteredLeague} />
+      {searchQuery?.trim().length >= 2 && (
+        <div className="search-results-dropdown">
+          {searchResults.competitions.length > 0 && (
+            <div className="search-group">
+              <h3>Competitions</h3>
+              {searchResults.competitions.map((comp) => (
+                <div key={`comp-${comp.id}`}>{comp.name}</div>
+              ))}
+            </div>
+          )}
+
+          {searchResults.teams.length > 0 && (
+            <div className="search-group">
+              <h3>Teams</h3>
+              {searchResults.teams.map((team) => (
+                <div key={`team-${team.id}`}>
+                  {team.name} <small>({team.league})</small>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {searchResults.players.length > 0 && (
+            <div className="search-group">
+              <h3>Players</h3>
+              {searchResults.players.map((player) => (
+                <div key={`player-${player.id}`}>
+                  {player.name} <small>({player.team} - {player.league})</small>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {searchResults.competitions.length === 0 &&
+            searchResults.teams.length === 0 &&
+            searchResults.players.length === 0 && (
+              <p>No results found for "{searchQuery}"</p>
+            )}
+        </div>
+      )}
     </div>
   );
 };
-
-const LeagueDetails = ({ league }) => {
-  if (!league) {
-    return <div>Loading...</div>;
-  }
-  return (
-    <div>
-      <h2>{league.competition.name}</h2>
-      <ul>
-        {league.teams.map((team) => (
-          <TeamDetails key={team.id} team={team}/>
-        ))}
-      </ul>
-    </div>
-  );
-};
-
-const TeamDetails = ({ team }) => {
-  if (!team) {
-    console.log('no data');
-    return null
-  }
-  return (
-    <li>
-      {team?.name} 
-      <h3>Players</h3>
-      <ul>
-        {team.squad.map((person) => (
-          <PlayerDetails key={person.id} player={person}/>
-        ))}
-      </ul>
-    </li>
-  )
-}
-
-const PlayerDetails = ({ player }) => {
-  if (!player) {
-    return null
-  }
-  return (
-    <li>
-      {player.name}
-    </li>
-  )
-}
 
 export default Home

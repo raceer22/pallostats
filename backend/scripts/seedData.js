@@ -4,34 +4,32 @@ const redisClient = require('../utils/redis');
 const {
   normalizeTeam,
   normalizePlayer,
-  normalizeCompetition
+  normalizeCompetition,
 } = require('../services/footballService');
 
 const footballApi = axios.create({
   baseURL: config.get('footballData.api'),
   headers: {
-    'X-Auth-Token': config.get('footballData.apiKey')
-  }
+    'X-Auth-Token': config.get('footballData.apiKey'),
+  },
 });
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-const TTL_WEEK = 86400 * 7
-
+const TTL_WEEK = 86400 * 7;
 
 const getCompetitions = async () => {
-  const res = await footballApi.get(`/competitions`)
-  const data = res.data
-  console.log("ok")
+  const res = await footballApi.get('/competitions');
+  const { data } = res;
+  console.log('ok');
 
-  const normalizedCompetitions = []
+  const normalizedCompetitions = [];
 
-  data.competitions.forEach(competition => {
-    normalizedCompetitions.push(normalizeCompetition(competition))
-  })
+  data.competitions.forEach((competition) => {
+    normalizedCompetitions.push(normalizeCompetition(competition));
+  });
 
-  return normalizedCompetitions
-}
-
+  return normalizedCompetitions;
+};
 
 const runSeeder = async () => {
   try {
@@ -41,12 +39,11 @@ const runSeeder = async () => {
     }
 
     console.log('Aloitetaan 13 liigan lataus ja indeksointi...');
-    const competitions = await getCompetitions()
+    const competitions = await getCompetitions();
 
     const COMPETITION_CODES = competitions
       .map((c) => c.code)
-      .filter((code) => Boolean(code))
-    
+      .filter((code) => Boolean(code));
 
     const allSearchEntities = [...competitions];
 
@@ -56,7 +53,7 @@ const runSeeder = async () => {
       try {
         const [compRes, teamsRes] = await Promise.all([
           footballApi.get(`/competitions/${code}`),
-          footballApi.get(`/competitions/${code}/teams`)
+          footballApi.get(`/competitions/${code}/teams`),
         ]);
 
         const compData = compRes.data;
@@ -88,13 +85,13 @@ const runSeeder = async () => {
         const leaguePayload = {
           competition: normalizedComp,
           teams: leagueTeams,
-          players: leaguePlayers
+          players: leaguePlayers,
         };
 
         await redisClient.set(
           `league_full:${code}`,
           JSON.stringify(leaguePayload),
-          { EX: TTL_WEEK }
+          { EX: TTL_WEEK },
         );
 
         console.log(`✅ ${leagueName} tallennettu: ${leagueTeams.length} joukkuetta, ${leaguePlayers.length} pelaajaa.`);
@@ -108,7 +105,7 @@ const runSeeder = async () => {
 
     console.log(`\n Tallennetaan hakuhakemisto Redisiin (${allSearchEntities.length} kohdetta)...`);
     await redisClient.set('search:all_entities', JSON.stringify(allSearchEntities), {
-      EX: TTL_WEEK
+      EX: TTL_WEEK,
     });
 
     console.log('🎉 Kaikki data alustettu ja valmiina hakuja varten!');

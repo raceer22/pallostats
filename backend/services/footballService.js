@@ -49,7 +49,6 @@ const getLeaguesTeamsPlayers = async () => {
 
   data.competitions.forEach(competition => {
     normalizedCompetitions.push(normalizeCompetition(competition))
-
   })
 }
 

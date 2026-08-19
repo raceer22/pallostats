@@ -1,12 +1,12 @@
-const axios = require('axios')
-const config = require('config')
-const redisClient = require('../utils/redis')
+const axios = require('axios');
+const config = require('config');
+const redisClient = require('../utils/redis');
 
 const footballApi = axios.create({
   baseURL: config.get('footballData.api'),
   headers: {
     'X-Auth-Token': config.get('footballData.apiKey'),
-  }
+  },
 });
 
 const normalizeCompetition = (rawComp) => ({
@@ -14,16 +14,16 @@ const normalizeCompetition = (rawComp) => ({
   name: rawComp.name,
   code: rawComp.code,
   emblem: rawComp.emblem,
-  type: 'competition'
-})
+  type: 'competition',
+});
 
 const normalizeTeam = (rawTeam, leagueName = '') => ({
   id: rawTeam.id,
   name: rawTeam.name || rawTeam.shortName,
   badge: rawTeam.crest,
   league: leagueName,
-  type: 'team'
-})
+  type: 'team',
+});
 
 const normalizePlayer = (rawPlayer, teamName = '', leagueName = '') => ({
   id: rawPlayer.id,
@@ -31,29 +31,29 @@ const normalizePlayer = (rawPlayer, teamName = '', leagueName = '') => ({
   position: rawPlayer.position || 'Unknown',
   team: teamName,
   league: leagueName,
-  type: 'player'
-})
+  type: 'player',
+});
 
 const getLeaguesTeamsPlayers = async () => {
-  const cacheKey = `competitions:all`
+  const cacheKey = 'competitions:all';
 
-  const cached = await redisClient.get(cacheKey)
+  const cached = await redisClient.get(cacheKey);
   if (cached) return JSON.parse(cached);
 
-  const res = await footballApi.get(`/all`)
-  const data = res.data
+  const res = await footballApi.get('/all');
+  const { data } = res;
 
-  const normalizedPlayers = []
-  const normalizedTeams = []
-  const normalizedCompetitions = []
+  const normalizedPlayers = [];
+  const normalizedTeams = [];
+  const normalizedCompetitions = [];
 
-  data.competitions.forEach(competition => {
-    normalizedCompetitions.push(normalizeCompetition(competition))
-  })
-}
+  data.competitions.forEach((competition) => {
+    normalizedCompetitions.push(normalizeCompetition(competition));
+  });
+};
 
 module.exports = {
   normalizeCompetition,
   normalizeTeam,
-  normalizePlayer
-}
+  normalizePlayer,
+};

@@ -19,11 +19,6 @@ const TTL_WEEK = 86400 * 7
 
 
 const getCompetitions = async () => {
-  // const cacheKey = `competitions:all`
-
-  // const cached = await redisClient.get(cacheKey)
-  // if (cached) return JSON.parse(cached);
-
   const res = await footballApi.get(`/competitions`)
   const data = res.data
   console.log("ok")

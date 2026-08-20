@@ -11,7 +11,7 @@ import { useSearchQuery, useSearchData, useUIActions } from './stores/useUIStore
 import { useCurrentLeague, useLeagueActions } from './stores/useLeagueStore';
 
 import SearchBar from './components/SearchBar.jsx';
-import Home from './components/Home';
+import Home, { CompetitionDetail } from './components/Home';
 
 const App = () => {
   const { setCurrentLeague } = useLeagueActions()
@@ -28,7 +28,7 @@ const App = () => {
     <Container>
       <SearchBar/>
       <Routes>
-        <Route path="/" element={<Home/>} />
+        <Route path="/" element={<Home />} />
       </Routes>
     </Container>
   )

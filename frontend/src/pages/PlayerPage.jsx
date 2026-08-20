@@ -1,12 +1,12 @@
 import { useParams } from 'react-router-dom';
 
-export default function CompetitionPage() {
+export default function PlayerPage() {
   const { id } = useParams(); // extracts the ':id' from the URL
 
   return (
     <div>
-      <h1>Competition Details</h1>
-      <p>Competition ID: {id}</p>
+      <h1>Player Details</h1>
+      <p>Player ID: {id}</p>
     </div>
   );
 }

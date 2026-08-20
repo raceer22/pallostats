@@ -22,25 +22,22 @@ const Home = () => {
 const CompetitionListItem = ({ competition }) => {
   return (
     <li>
-      <Link to={`/competition/${competition.id}`}>
+      <Link to={`/competitions/${competition.id}`}>
         {competition.name}
       </Link>
     </li>
   );
 };
 
-const CompetitionDetail = () => {
-  const { id } = useParams();
+const LinkToHome = () => {
   return (
-    <div>
-      <h2>Competition Details</h2>
-      <p>Viewing ID: {id}</p>
-      <Link to="/">Back to Home</Link>
-    </div>
-  );
-};
+    <Link to={'/'}>
+      Home
+    </Link>
+  )
+}
 
 export default Home
 export {
-  CompetitionDetail
+  LinkToHome
 }

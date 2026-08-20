@@ -1,14 +1,6 @@
 const searchRouter = require('express').Router();
-const axios = require('axios');
-const config = require('config');
 const redisClient = require('../utils/redis');
-
-const footballApi = axios.create({
-  baseURL: config.get('footballData.api'),
-  headers: {
-    'X-Auth-Token': config.get('footballData.apiKey'),
-  },
-});
+const footballApi = require('./footballApi')
 
 searchRouter.get('/', async (req, res) => {
   const cacheKey = 'search:all_entities';
@@ -17,7 +9,7 @@ searchRouter.get('/', async (req, res) => {
   const category = req.query.category?.toUpperCase() || 'ALL';
 
   let data = await redisClient.get(cacheKey);
-  if (!cachedData) {
+  if (!data) {
     try {
       data = await footballApi.get('/competitions').data;
       await redisClient.set(cacheKey, JSON.stringify(data), {
@@ -41,7 +33,7 @@ searchRouter.get('/', async (req, res) => {
   }
 });
 
-searchRouter.get('/list', async (req, res) => {
+searchRouter.get('/entities', async (req, res) => {
   const cacheKey = 'search:all_entities';
 
   const cachedData = await redisClient.get(cacheKey);

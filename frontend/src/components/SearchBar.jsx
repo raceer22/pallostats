@@ -1,31 +1,26 @@
 import React, { useMemo } from 'react';
-import {
-  Autocomplete,
-  TextField,
-  Box,
-  Typography,
-  Chip
-} from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { useSearchQuery, useSearchData, useUIActions } from '../stores/useUIStore';
+import { Autocomplete, TextField, Box, Typography } from '@mui/material';
+import { useSearchStore } from '../stores/useSearchStore';
 
 const SearchBar = () => {
   const navigate = useNavigate();
-  const searchQuery = useSearchQuery();
-  const searchData = useSearchData() || [];
-  const { setSearchQuery } = useUIActions();
+  const { entities, query, setQuery, clearQuery } = useSearchStore();
 
+  // Suodatetaan tulokset useMemolla suoraan välimuistitetusta listasta
   const filteredOptions = useMemo(() => {
-    const query = searchQuery?.trim().toLowerCase();
-    if (!query || query.length < 2) return [];
+    const trimmed = query?.trim().toLowerCase();
+    if (!trimmed || trimmed.length < 2) return [];
 
-    return searchData
-      .filter((item) => item?.name?.toLowerCase().includes(query))
-      .slice(0, 15); 
-  }, [searchQuery, searchData]);
+    return entities
+      .filter((item) => item?.name?.toLowerCase().includes(trimmed))
+      .slice(0, 15);
+  }, [query, entities]);
 
   const handleSelect = (event, selectedItem) => {
-    if (!selectedItem) return;
+    if (!selectedItem || typeof selectedItem === 'string') return;
+
+    clearQuery();
 
     if (selectedItem.type === 'competition') {
       navigate(`/competitions/${selectedItem.code || selectedItem.id}`);
@@ -37,22 +32,23 @@ const SearchBar = () => {
   };
 
   return (
-    <Box sx={{ width: 350 }}>
+    <Box sx={{ width: { xs: 200, sm: 320, md: 400 } }}>
       <Autocomplete
         freeSolo
         options={filteredOptions}
+        open={Boolean(query && query.trim().length >= 2)}
         groupBy={(option) => option.type?.toUpperCase()}
         getOptionLabel={(option) =>
           typeof option === 'string' ? option : option.name || ''
         }
-        inputValue={searchQuery}
+        inputValue={query}
         onInputChange={(event, newInputValue) => {
-          setSearchQuery(newInputValue);
+          setQuery(newInputValue);
         }}
         onChange={handleSelect}
         noOptionsText={
           <Typography variant="body2" color="text.secondary">
-            No results found for "{searchQuery}"
+            Ei tuloksia haulle "{query}"
           </Typography>
         }
         renderOption={(props, option) => {
@@ -62,21 +58,15 @@ const SearchBar = () => {
               component="li"
               key={key || `${option.type}-${option.id}`}
               {...otherProps}
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'flex-start',
-                py: 1,
-              }}
+              sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', py: 1 }}
             >
-              <Typography variant="body1" fontWeight={500}>
+              <Typography variant="body2" fontWeight={600}>
                 {option.name}
               </Typography>
-              
               <Typography variant="caption" color="text.secondary">
-                {option.type === 'player' && `${option.team} • ${option.league}`}
-                {option.type === 'team' && `${option.league}`}
-                {option.type === 'competition' && 'Competition'}
+                {option.type === 'player' && `${option.team || 'Joukkue ei tiedossa'} • ${option.league || ''}`}
+                {option.type === 'team' && `${option.league || 'Sarja'}`}
+                {option.type === 'competition' && 'Kilpailu'}
               </Typography>
             </Box>
           );
@@ -84,7 +74,7 @@ const SearchBar = () => {
         renderInput={(params) => (
           <TextField
             {...params}
-            label="Search competitions, teams, players..."
+            placeholder="Hae sarjoja, joukkueita, pelaajia..."
             variant="outlined"
             size="small"
             fullWidth

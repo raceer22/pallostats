@@ -1,45 +1,39 @@
-import { Container, TextField, Button } from '@mui/material';
-import { useLocation, Routes, Route, Link, useNavigate, useMatch } from 'react-router-dom';
-import {
-  useState,
-  useEffect
-} from 'react';
-import searchService from './services/search'
-import { useSearchQuery, useSearchData, useUIActions } from './stores/useUIStore';
-import { useCurrentLeague, useLeagueActions } from './stores/useLeagueStore';
+import React, { useEffect } from 'react';
+import { Routes, Route } from 'react-router-dom';
+import { ThemeProvider, CssBaseline, Box } from '@mui/material';
+import { nordTheme, gruvboxTheme } from './theme';
+import { useThemeStore } from './stores/useThemeStore';
+import { useSearchStore } from './stores/useSearchStore';
 
-import SearchBar from './components/SearchBar.jsx';
-import Home from './components/Home';
-import CompetitionPage from './pages/CompetitionPage.jsx';
-import TeamPage from './pages/TeamPage.jsx';
-import PlayerPage from './pages/PlayerPage.jsx';
-import { LinkToHome } from './components/Home';
+import Navbar from './components/Navbar';
+import HomeView from './views/HomeView';
+import LeagueView from './views/LeagueView';
 
 const App = () => {
-  const { setCurrentLeague } = useLeagueActions()
-  const { setSearchData } = useUIActions()
+  const mode = useThemeStore((state) => state.mode);
+  const fetchSearchEntities = useSearchStore((state) => state.fetchSearchEntities);
 
-  const isRoot = useLocation().pathname === '/';
+  const activeTheme = mode === 'gruvbox' ? gruvboxTheme : nordTheme;
 
+  // Ladataan hakuhakemisto kerran välimuistiin käynnistyksessä
   useEffect(() => {
-    searchService.getAll().then(response => {
-      console.log(response.data);
-      setSearchData(response.data)
-    })
-  }, [setSearchData])
+    fetchSearchEntities();
+  }, [fetchSearchEntities]);
 
   return (
-    <Container>
-      <SearchBar/>
-      { !isRoot && <LinkToHome/> }
-      <Routes>
-        <Route path="/" element={<Home/>} />
-        <Route path="/competitions/:id" element={<CompetitionPage/>} />
-        <Route path="/teams/:id" element={<TeamPage/>} />
-        <Route path="/players/:id" element={<PlayerPage/>} />
-      </Routes>
-    </Container>
-  )
-}
+    <ThemeProvider theme={activeTheme}>
+      <CssBaseline />
+      <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<HomeView />} />
+          <Route path="/competitions/:code" element={<LeagueView />} />
+          <Route path="/teams/:id" element={<HomeView />} />
+          <Route path="/players/:id" element={<HomeView />} />
+        </Routes>
+      </Box>
+    </ThemeProvider>
+  );
+};
 
-export default App
+export default App;

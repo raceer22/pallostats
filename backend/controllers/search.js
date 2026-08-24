@@ -1,6 +1,6 @@
 const searchRouter = require('express').Router();
 const redisClient = require('../utils/redis');
-const footballApi = require('./footballApi')
+const footballApi = require('./footballApi');
 
 searchRouter.get('/', async (req, res) => {
   const cacheKey = 'search:all_entities';

@@ -4,7 +4,7 @@ const searchRouter = require('./controllers/search');
 const leagueRouter = require('./controllers/leagues');
 
 const app = express();
-app.use(cors())
+app.use(cors());
 
 app.get('/api/ping', (req, res) => {
   res.send('Backend is up!');

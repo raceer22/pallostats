@@ -1,8 +1,8 @@
-const config = require('config');
 const app = require('./app');
 const redisClient = require('./utils/redis');
+const config = require('./config/config');
 
-const port = config.get('server.port') || 3000;
+const port = config.server.port || 3000;
 
 const startServer = async () => {
   try {

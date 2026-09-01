@@ -1,11 +1,11 @@
 const axios = require('axios');
-const config = require('config');
 const redisClient = require('../utils/redis');
+const config = require('../config/config');
 
 const footballApi = axios.create({
-  baseURL: config.get('footballData.api'),
+  baseURL: config.footballData.apiURL,
   headers: {
-    'X-Auth-Token': config.get('footballData.apiKey'),
+    'X-Auth-Token': config.footballData.apiKey,
   },
 });
 

@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+console.log('Backend is up and running!');
 const searchRouter = require('./controllers/search');
 const leagueRouter = require('./controllers/leagues');
 
